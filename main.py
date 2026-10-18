@@ -1,3 +1,20 @@
+from flask import Flask
+import threading
+import discord
+import os
+from groq import Groq
+
+app = Flask(__name__)
+@app.route('/')
+def home():
+    return "Bot 614 Online!"
+
+def run_web():
+    app.run(host='0.0.0.0', port=10000)
+
+threading.Thread(target=run_web, daemon=True).start()
+
+# --- Tu código original empieza aquí ---
 import discord
 import os
 from groq import Groq
