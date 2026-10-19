@@ -22,7 +22,7 @@ async def on_message(message):
             pregunta = "Hola!"
         try:
             resp = groq_client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
+                model="llama-3.1-8b-instant",
                 messages=[{"role": "user", "content": pregunta}]
             )
             await message.reply(resp.choices[0].message.content[:2000])
