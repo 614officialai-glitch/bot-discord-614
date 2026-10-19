@@ -1,3 +1,4 @@
-discord.py==2.4.0
-groq==0.11.0
+discord.py
+groq==0.12.0
+httpx==0.27.2
 audioop-lts
