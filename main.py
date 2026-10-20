@@ -1,9 +1,9 @@
 import os
-import 【entity-discord¦canonical_name=discord】
-from 【entity-discord¦canonical_name=discord】.ext import commands
+import discord
+from discord.ext import commands
 from groq import Groq
 
-intents = 【entity-discord¦canonical_name=discord】.Intents.default()
+intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
@@ -36,14 +36,11 @@ def preguntar_groq(texto):
                 temperature=0.9
             )
             contenido = resp.choices[0].message.content
-            # FILTRO PARA VACIO
             if not contenido or not contenido.strip():
                 print(f"[Groq] {modelo} devolvio vacio, probando siguiente")
                 continue
-            
             print(f"[Groq] OK con {modelo}")
             return contenido.strip()
-            
         except Exception as e:
             print(f"[Groq] {modelo} fallo: {e}")
             last_err = e
@@ -64,10 +61,8 @@ async def on_message(message):
             pregunta = "Hola!"
         try:
             respuesta = preguntar_groq(pregunta)
-            # SEGUNDO FILTRO POR SI AUN ASI VIENE VACIO
             if not respuesta or len(respuesta.strip()) == 0:
                 respuesta = "Alv me quede en blanco we jajaja, preguntame de nuevo"
-            
             await message.reply(respuesta[:2000])
         except Exception as e:
             print(f"ERROR FINAL: {e}")
