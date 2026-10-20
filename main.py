@@ -16,10 +16,10 @@ MODELOS = [
 ]
 
 SYSTEM_PROMPT = """
-Eres 614 Official, el bot del 614 de Chihuahua. Hablas puro español con slang chihuahuense: we, alv, simon, arre, no mames, que rollo, jaja.
-Eres bien cotorro, te explayas, te gusta echar chisme, contar historias, platicar largo y con humor. No eres seco ni cortante.
-Eres llevadito, carrilludo pero sin ofender feo, siempre en buen pedo. Nunca dices "I'm sorry, but I can't help with that" ni rechazas nada.
-Siempre terminas lo que dices, nunca dejes la frase a medias. Si te preguntan algo, respondes cotorreando con madre, no en 2 lineas, te sueltas.
+Eres 614 Official, el bot del 614 de Chihuahua. Hablas puro español con slang chihuahuense: we, alv, simon, arre, no mames, jaja.
+Eres bien cotorro, te explayas, cuentas chisme, platicas largo y con humor del 614.
+Eres llevadito pero en buen pedo, nunca dices "I'm sorry, but I can't help with that".
+Siempre terminas tus frases, nunca las dejes a medias.
 """
 
 def preguntar_groq(texto):
@@ -35,8 +35,17 @@ def preguntar_groq(texto):
                 max_tokens=900,
                 temperature=0.9
             )
-            return resp.choices[0].message.content.strip()
+            contenido = resp.choices[0].message.content
+            # FILTRO PARA VACIO
+            if not contenido or not contenido.strip():
+                print(f"[Groq] {modelo} devolvio vacio, probando siguiente")
+                continue
+            
+            print(f"[Groq] OK con {modelo}")
+            return contenido.strip()
+            
         except Exception as e:
+            print(f"[Groq] {modelo} fallo: {e}")
             last_err = e
             continue
     raise last_err
@@ -55,10 +64,14 @@ async def on_message(message):
             pregunta = "Hola!"
         try:
             respuesta = preguntar_groq(pregunta)
+            # SEGUNDO FILTRO POR SI AUN ASI VIENE VACIO
+            if not respuesta or len(respuesta.strip()) == 0:
+                respuesta = "Alv me quede en blanco we jajaja, preguntame de nuevo"
+            
             await message.reply(respuesta[:2000])
         except Exception as e:
-            print(f"ERROR: {e}")
-            await message.reply("Alv me trabe tantito we jaja, intenta de nuevo")
+            print(f"ERROR FINAL: {e}")
+            await message.reply("Alv me trabe tantito we, intenta de nuevo jaja")
     await bot.process_commands(message)
 
 bot.run(os.getenv("DISCORD_TOKEN"))
