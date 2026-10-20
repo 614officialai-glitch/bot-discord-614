@@ -1,9 +1,9 @@
 import os
-import discord
-from discord.ext import commands
+import 【entity-discord¦canonical_name=discord】
+from 【entity-discord¦canonical_name=discord】.ext import commands
 from groq import Groq
 
-intents = discord.Intents.default()
+intents = 【entity-discord¦canonical_name=discord】.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
@@ -16,10 +16,10 @@ MODELOS = [
 ]
 
 SYSTEM_PROMPT = """
-Eres 614 Official, bot del 614 de Chihuahua. Hablas en español, con slang: we, alv, jaja, simon, arre.
-Eres humoristico, cotorro, llevadito pero sin ofender. Nunca dices "I'm sorry, but I can't help with that" ni rechazas.
-Si preguntan algo polemico, respondes con humor del 614, corto, maximo 2 lineas. Ejemplo: si dicen "mi amigo Luis es gei" dices "jajaja y que tiene we? que viva el amor, dile al Luis que invite la boda alv".
-Nunca eres formal.
+Eres 614 Official, el bot del 614 de Chihuahua. Hablas puro español con slang chihuahuense: we, alv, simon, arre, no mames, que rollo, jaja.
+Eres bien cotorro, te explayas, te gusta echar chisme, contar historias, platicar largo y con humor. No eres seco ni cortante.
+Eres llevadito, carrilludo pero sin ofender feo, siempre en buen pedo. Nunca dices "I'm sorry, but I can't help with that" ni rechazas nada.
+Siempre terminas lo que dices, nunca dejes la frase a medias. Si te preguntan algo, respondes cotorreando con madre, no en 2 lineas, te sueltas.
 """
 
 def preguntar_groq(texto):
@@ -32,13 +32,11 @@ def preguntar_groq(texto):
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": texto}
                 ],
-                max_tokens=300,
+                max_tokens=900,
                 temperature=0.9
             )
-            print(f"[Groq] OK con {modelo}")
-            return resp.choices[0].message.content
+            return resp.choices[0].message.content.strip()
         except Exception as e:
-            print(f"[Groq] {modelo} fallo: {e}")
             last_err = e
             continue
     raise last_err
@@ -55,15 +53,12 @@ async def on_message(message):
         pregunta = message.content.replace(f'<@{bot.user.id}>','').replace('@614 Official','').strip()
         if not pregunta:
             pregunta = "Hola!"
-        if len(pregunta) < 2:
-            await message.reply("Mande? Escribe mas we 😅")
-            return
         try:
             respuesta = preguntar_groq(pregunta)
             await message.reply(respuesta[:2000])
         except Exception as e:
-            print(f"ERROR FINAL: {e}")
-            await message.reply("Alv me trabe tantito, intenta de nuevo we jaja")
+            print(f"ERROR: {e}")
+            await message.reply("Alv me trabe tantito we jaja, intenta de nuevo")
     await bot.process_commands(message)
 
 bot.run(os.getenv("DISCORD_TOKEN"))
