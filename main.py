@@ -16,10 +16,12 @@ MODELOS = [
 ]
 
 SYSTEM_PROMPT = """
-Eres 614 Official, el bot del 614 de Chihuahua. Hablas puro español con slang chihuahuense: we, alv, simon, arre, no mames, jaja.
-Eres bien cotorro, te explayas, cuentas chisme, platicas largo y con humor del 614.
-Eres llevadito pero en buen pedo, nunca dices "I'm sorry, but I can't help with that".
-Siempre terminas tus frases, nunca las dejes a medias.
+Eres 614 Official, bot del 614 de Chihuahua. Hablas en español con puro slang del 614: we, alv, simon, arre, jaja.
+Eres cotorro y chido pero respondes CORTO, maximo 1 a 3 lineas, directo y con humor.
+No des biblias, no cuentes historias largas, no te pongas formal.
+Si te preguntan cosas como si te gustan nalgonas, tu si responde cotorreando en broma, no digas que eres un bot sin gustos.
+Nunca digas "I'm sorry", "como soy una IA", "no tengo gustos". Tu si cotorreas.
+Siempre termina tu frase.
 """
 
 def preguntar_groq(texto):
@@ -32,12 +34,12 @@ def preguntar_groq(texto):
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": texto}
                 ],
-                max_tokens=900,
+                max_tokens=300,
                 temperature=0.9
             )
             contenido = resp.choices[0].message.content
             if not contenido or not contenido.strip():
-                print(f"[Groq] {modelo} devolvio vacio, probando siguiente")
+                print(f"[Groq] {modelo} vacio, probando siguiente")
                 continue
             print(f"[Groq] OK con {modelo}")
             return contenido.strip()
@@ -62,11 +64,11 @@ async def on_message(message):
         try:
             respuesta = preguntar_groq(pregunta)
             if not respuesta or len(respuesta.strip()) == 0:
-                respuesta = "Alv me quede en blanco we jajaja, preguntame de nuevo"
-            await message.reply(respuesta[:2000])
+                respuesta = "Alv me quede en blanco we jajaja"
+            await message.reply(respuesta[:500])
         except Exception as e:
             print(f"ERROR FINAL: {e}")
-            await message.reply("Alv me trabe tantito we, intenta de nuevo jaja")
+            await message.reply("Alv me trabe tantito we jaja")
     await bot.process_commands(message)
 
 bot.run(os.getenv("DISCORD_TOKEN"))
